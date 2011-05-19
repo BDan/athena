@@ -1,0 +1,15 @@
+Failure in testMultiplyDecimalValues:
+junit.framework.ComparisonFailure: Multiply Decimal Values expected:<...29...> but was:<...8...>
+	at fi.vtt.psw.android_calc.test.SimpleCalcTest.testMultiplyDecimalValues(SimpleCalcTest.java:87)
+	at java.lang.reflect.Method.invokeNative(Native Method)
+	at android.test.InstrumentationTestCase.runMethod(InstrumentationTestCase.java:205)
+	at android.test.InstrumentationTestCase.runTest(InstrumentationTestCase.java:195)
+	at android.test.ActivityInstrumentationTestCase2.runTest(ActivityInstrumentationTestCase2.java:175)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:169)
+	at android.test.AndroidTestRunner.runTest(AndroidTestRunner.java:154)
+	at android.test.InstrumentationTestRunner.onStart(InstrumentationTestRunner.java:430)
+	at android.app.Instrumentation$InstrumentationThread.run(Instrumentation.java:1447)
+Test results for InstrumentationTestRunner=.F
+Time: 1.693
+FAILURES!!!
+Tests run: 1,  Failures: 1,  Errors: 0

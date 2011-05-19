@@ -89,10 +89,12 @@ public class AthenaTestResult {
 
 	// Do we need to handle errorStream?
 	public void parse(String outputStream, String errorStream) {
-		final String AFE = "junit.framework.AssertionFailedError";
+		//final String AFE = "junit.framework.AssertionFailedError";
+		final String AFE = "Failure in ";
 		final String TIME = "Time:";
 		String[] lines = outputStream.split("\n");
 		boolean capture = false;
+		boolean wasFailure = false;
 		for (String line : lines) {
 			if (capture) {
 				if (line.startsWith("\t")) {
@@ -101,16 +103,24 @@ public class AthenaTestResult {
 					capture = false;
 				}
 			}
-			if (line.startsWith(AFE)) {
-				failureClass = AFE;
-				capture = true;
-				// +1 for the trailing ':'
-				if (line.length() > AFE.length()+1) {
-					failure = line.substring(AFE.length() + 2);
-				} else {
-					failure = "";
-				}
+			if (line.startsWith(AFE)){
+				wasFailure = true;
+				continue;
+			}
+			if (wasFailure) {
+				failureClass = line.split(":")[0];
+				
 				failureException = line + "\n";
+				if (line.length() > failureClass.length()+1) {
+				failure = line.substring(failureClass.length() + 2);
+			} else {
+				failure = "";
+			}				
+				capture = true;
+				wasFailure = false;
+				continue;
+
+				
 			}
 			if (line.startsWith(TIME)) {
 				String temp = line.substring(TIME.length()).trim();

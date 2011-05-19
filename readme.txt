@@ -39,6 +39,13 @@ Example: athena ~/projects/my_proj_test
 
 
 WHAT'S NEW
+v1.1.3
++ New command line parameter: --debug. Prints on 
+console the parameters passed to adb and the responses received
+
+Bug fixes:
+- Detects assert failures other than "junit.framework.AssertionFailedError"
+
 v1.1.2
 
 Features:

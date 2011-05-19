@@ -41,30 +41,71 @@ import org.w3c.dom.*;
  * @author Dan Watling <dan@synaptik.com>
  */
 public class Athena {
-	public static final String OUTPUT_FILE = "TEST-all.xml";
+	class consoleLogger implements logger {
+		public void log (String msg){
+			System.out.println(msg);
+		}
+	}
+	class nullLogger implements logger {
+		public void log (String msg){}
+	}
 	
+	
+	public static final String OUTPUT_FILE = "TEST-all.xml";
+	static final String USAGE = "USAGE: athena <--debug> <root of your Android test project> <output file [default=TEST-all.xml]>";
+
+	String inputFile, outputFile;
 	StringBuilder output;
 	String packageName;
-	
+	logger mLog;
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
-			System.out.println("USAGE: athena <root of your Android test project> <output file [default=TEST-all.xml]>");
+			System.out.println(USAGE);
 		} else {
 			new Athena().run(args);
 		}
 	}
-	
+
+	public void parseArgs(String[] args){
+		mLog = null; //new consoleLogger();
+		//boolean debug = false;
+		//int pos = 0;
+		for (int pos = 0; pos<args.length; pos++) {
+			if (args[pos].equals("--debug")){
+				mLog = new consoleLogger();
+				continue;
+			}
+			if (inputFile==null){
+				inputFile=args[pos];
+				continue;
+			}
+			if (outputFile==null){
+				outputFile=args[pos];
+				continue;
+			}
+		}
+
+		if (inputFile == null || inputFile.length() == 0) {
+			System.out.println(USAGE);
+			System.exit(-1);
+		}
+		
+		if (outputFile == null || outputFile.length() == 0) {
+			outputFile = OUTPUT_FILE;
+		}
+		if (mLog==null){
+			mLog = new nullLogger();
+		}
+		
+		
+	}
 	public void run(String[] args) throws Exception {
 		int totalFailures = 0;
 		int totalErrors = 0;
 		int totalTests = 0;
-		System.out.println("\nBegin Athena\n");
-		String inputFile = args[0];
-		String outputFile = args.length > 1 ? args[1] : null;
-		if (outputFile == null || outputFile.length() == 0) {
-			outputFile = OUTPUT_FILE;
-		}
 		
+		System.out.println("\nBegin Athena\n");
+		parseArgs(args);
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(outputFile);
@@ -163,9 +204,10 @@ public class Athena {
 	}
 	
 	private void runCommand(AthenaTestSuite suite, AthenaTest testCase) throws Exception {
+		mLog.log("##Test: "+suite.className+":"+testCase.name);
 		String cmd = "adb shell am instrument -w -e class " + suite.className + "#" + testCase.name + " " + packageName + "/android.test.InstrumentationTestRunner";
 		
-//		System.out.println(cmd);
+		mLog.log("##Command "+cmd);
 		
 		testCase.result.start = System.currentTimeMillis();
 		Process p = Runtime.getRuntime().exec(cmd);
@@ -178,6 +220,9 @@ public class Athena {
 		
 		
 		testCase.result.testName = testCase.name;
+		mLog.log("##Output Stream: "+outputStream.output.toString());
+		mLog.log("##Error Stream: "+errorStream.output.toString());
+		
 		testCase.result.parse(outputStream.output.toString(), errorStream.output.toString());
 		
 		if (testCase.result.failure != null) {

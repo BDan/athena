@@ -1,0 +1,5 @@
+Failure in testMethod:
+junit.framework.AssertionFailedError: Unexpected exception
+	at org.junit.Assert.fail(Assert.java:74)
+	at UnexpectedExceptionTest1.testGet(Unknown Source)\n" +
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n";
